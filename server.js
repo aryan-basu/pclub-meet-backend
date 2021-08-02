@@ -9,8 +9,7 @@ const { ExpressPeerServer } = require("peer");
 const newMeeting = require("./routes/newMeeting");
 
 const peerServer = ExpressPeerServer(server, {
-    debug: true,
-    path: '/myapp'
+    debug: true
 });
 
 app.use("/peerjs", peerServer);
@@ -21,12 +20,18 @@ app.get('/', (req, res) => res.send("Working...."))
 app.get('/join', (req, res) => newMeeting(req, res));
 
 io.on("connection", (socket) => {
-    console.log("user connected")
+    
     socket.on("join-room", (roomId, userId) => {
-        socket.join(roomId)
+        
+        socket.join(roomId);
+        socket.broadcast.to(roomId).emit('user-connected', userId);  
+
+        socket.on('disconnect', () => {
+            socket.broadcast.to(roomId).emit('user-disconnected', userId)
+        })
     })
 })
 
-server.listen(process.env.PORT || 5000, () => {
+server.listen(5000, () => {
     console.log("Server is running...")
 })
