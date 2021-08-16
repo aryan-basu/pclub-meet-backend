@@ -22,14 +22,7 @@ app.get('/join', (req, res) => newMeeting(req, res));
 
 io.on("connection", (socket) => {
 
-    socket.on('message', async (message) => {
-        sockets.forEach(socket => {
-            io.to(socket).emit('received', message)
-        })
-    })
     socket.on("join-room", (roomId, userId) => {
-
-        const p_user = join_User(socket.id, roomId);
 
         socket.join(roomId);
         socket.broadcast.to(roomId).emit('user-connected', userId);
@@ -39,8 +32,7 @@ io.on("connection", (socket) => {
         })
 
         socket.on("message", (message) => {
-            const p_user = get_Current_User(socket.id);
-            io.to(p_user.room).emit("createMessage", message, userId);
+            io.to(roomId).emit("createMessage", message, userId);
         });
     })
 })
