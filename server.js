@@ -5,7 +5,6 @@ const app = express();
 const server = http.createServer(app);
 const io = require("socket.io")(server, { cors: { origin: '*' } });
 const { ExpressPeerServer } = require("peer");
-const { get_Current_User, user_Disconnect, join_User } = require("./dummyuser");
 
 const newMeeting = require("./routes/newMeeting");
 
