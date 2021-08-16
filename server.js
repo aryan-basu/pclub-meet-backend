@@ -5,6 +5,7 @@ const app = express();
 const server = http.createServer(app);
 const io = require("socket.io")(server, { cors: { origin: '*' } });
 const { ExpressPeerServer } = require("peer");
+const { get_Current_User, user_Disconnect, join_User } = require("./dummyuser");
 
 const newMeeting = require("./routes/newMeeting");
 
@@ -21,7 +22,14 @@ app.get('/join', (req, res) => newMeeting(req, res));
 
 io.on("connection", (socket) => {
 
+    socket.on('message', async (message) => {
+        sockets.forEach(socket => {
+            io.to(socket).emit('received', message)
+        })
+    })
     socket.on("join-room", (roomId, userId) => {
+
+        const p_user = join_User(socket.id, roomId);
 
         socket.join(roomId);
         socket.broadcast.to(roomId).emit('user-connected', userId);
@@ -29,6 +37,11 @@ io.on("connection", (socket) => {
         socket.on('disconnect', () => {
             socket.broadcast.to(roomId).emit('user-disconnected', userId)
         })
+
+        socket.on("message", (message) => {
+            const p_user = get_Current_User(socket.id);
+            io.to(p_user.room).emit("createMessage", message, userId);
+        });
     })
 })
 
