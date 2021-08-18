@@ -21,6 +21,11 @@ app.get('/join', (req, res) => newMeeting(req, res));
 
 io.on("connection", (socket) => {
 
+    socket.on('msg', function (data) {
+        // server side data fetched 
+        console.log(data);
+        io.sockets.emit('newmsg', data);
+    })
     socket.on("join-room", (roomId, userId) => {
 
         socket.join(roomId);
@@ -30,9 +35,9 @@ io.on("connection", (socket) => {
             socket.broadcast.to(roomId).emit('user-disconnected', userId)
         })
 
-        socket.on("message", (message) => {
+        /*socket.on("message", (message) => {
             io.to(roomId).emit("createMessage", message, userId);
-        });
+        });  */
     })
 })
 
