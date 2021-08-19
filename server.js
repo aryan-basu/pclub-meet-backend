@@ -67,14 +67,14 @@ io.on("connection", socket => {
         console.log(data);
         io.sockets.emit('newmsg', data);
      });
-   /* socket.on("join-room", (roomId, userId) => {
+    socket.on("join-room", (roomId, userId) => {
        // console.log(roomId);
         //const user=userId;
         //console.log(user);
         //users.push(user);
         //io.sockets.emit('all user',users);
         //socket.join(roomId);
-   socket.broadcast.to(roomId).emit('user-connected', userId); */ 
+   socket.broadcast.to(roomId).emit('user-connected', userId); 
         
   
         socket.on('disconnect', () => {
@@ -94,7 +94,9 @@ io.on("connection", socket => {
             io.to(roomId).emit("createMessage", message, userId);
         });  */
       //console.log(clients);
+    
     })
+})
 
 
 server.listen(process.env.PORT || 5000, () => {
