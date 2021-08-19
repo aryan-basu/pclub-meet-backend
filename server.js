@@ -86,7 +86,7 @@ io.on("connection", socket => {
                     users: getRoomUsers(user.room)
                   });
             }
-           // socket.broadcast.to(roomId).emit('user-disconnected', userId)
+            socket.broadcast.to(roomId).emit('user-disconnected', userId)
             //console.log(io.sockets.clients().length);
         })
 
