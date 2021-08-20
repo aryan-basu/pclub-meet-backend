@@ -45,7 +45,7 @@ function userLeave(id) {
   }
 io.on("connection", socket => {
    
-    socket.on('joinRoom', ({ username, roomId }) => {
+   /* socket.on('joinRoom', ({ username, roomId }) => {
         const user = userJoin(socket.id, username, roomId);
         //console.log(user);
         const index1 = users.findIndex(user => user.id === socket.id);
@@ -61,24 +61,34 @@ io.on("connection", socket => {
         roomId: user.roomId,
         users: getRoomUsers(user.roomId)
       });
-    });
+    }); */
      socket.on('msg', function(data){
         // server side data fetched 
         console.log(data);
         io.sockets.emit('newmsg', data);
      });
-    socket.on("join-room", (roomId, userId) => {
-       // console.log(roomId);
-        //const user=userId;
-        //console.log(user);
-        //users.push(user);
-        //io.sockets.emit('all user',users);
-        //socket.join(roomId);
+    socket.on("join-room", (roomId, userId,username) => {
+      
+        const user = userJoin(userId, username, roomId);
+      
+        const index1 = users.findIndex(user => user.id === userId);
+     
+        if(index1===-1)
+       users.push(user);
+        
+    
+        socket.join(user.roomId);
+         // Send users and room info
+         //socket.broadcast.to(user.roomId).emit('roomUsers', {
+        io.to(user.roomId).emit('roomUsers',{
+        roomId: user.roomId,
+        users: getRoomUsers(user.roomId)
+      });
    socket.broadcast.to(roomId).emit('user-connected', userId); 
         
   
         socket.on('disconnect', () => {
-            const user = userLeave(socket.id);
+            const user = userLeave(userId);
             if(user)
             {
                 io.to(user.room).emit('roomUsers', {
