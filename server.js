@@ -61,13 +61,25 @@ io.on("connection", socket => {
         roomId: user.roomId,
         users: getRoomUsers(user.roomId)
       });
-    });
+    }); 
+      
+    socket.on("join-room", (userData) => {
+
+      const { roomId, userId, username } = userData;
+      
+      socket.join(roomId);
+      socket.broadcast.to(roomId).emit('user-connected', userData);  
+
+      socket.on('disconnect', () => {
+          socket.broadcast.to(roomId).emit('user-disconnected', userId)
+      })
      socket.on('msg', function(data){
         // server side data fetched 
-        console.log(data);
+      //  console.log(data);
         io.sockets.emit('newmsg', data);
      });
-    socket.on("join-room", (roomId, userId) => {
+    })
+    /*socket.on("join-room", (roomId, userId) => {
        // console.log(roomId);
         //const user=userId;
         //console.log(user);
@@ -88,14 +100,14 @@ io.on("connection", socket => {
             }
             socket.broadcast.to(roomId).emit('user-disconnected', userId)
             //console.log(io.sockets.clients().length);
-        })
+        })  */
 
         /*socket.on("message", (message) => {
             io.to(roomId).emit("createMessage", message, userId);
         });  */
       //console.log(clients);
     
-    })
+  
 })
 
 
