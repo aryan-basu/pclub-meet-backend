@@ -78,11 +78,7 @@ io.on("connection", socket => {
         users: getRoomUsers(user.roomId)
       });
     });
-     socket.on('msg', function(data){
-        // server side data fetched 
-        console.log(data);
-        io.sockets.emit('newmsg', data);
-     });
+
     socket.on("join-room", (roomId, userId,displayname) => {
        // console.log(roomId);
         //const user=userId;
@@ -98,7 +94,11 @@ io.on("connection", socket => {
                             
                           });
    socket.broadcast.to(roomId).emit('user-connected', userId); 
-        
+         socket.on('msg', function (data) {
+            // server side data fetched 
+            console.log(data);
+            io.to(roomId).emit('newmsg', data);
+        })
   
         socket.on('disconnect', () => {
             const user = userLeave(socket.id);
