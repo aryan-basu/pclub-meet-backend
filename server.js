@@ -47,7 +47,7 @@ io.on("connection", (socket) => {
 roomRef.set({
                 
                     username: displayname,
-                    
+                    id:userId
                     
                   });
        
